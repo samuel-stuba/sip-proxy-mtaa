@@ -49,8 +49,8 @@ rx_uri = re.compile("sip:([^@]*)@([^;>$]*)")
 rx_addr = re.compile("sip:([^ ;>$]*)")
 #rx_addrport = re.compile("([^:]*):(.*)")
 rx_code = re.compile("^SIP/2.0 ([^ ]*)")
-rx_invalid = re.compile("^192\.168")
-rx_invalid2 = re.compile("^10\.")
+# rx_invalid = re.compile("^192\.168")
+# rx_invalid2 = re.compile("^10\.")
 #rx_cseq = re.compile("^CSeq:")
 #rx_callid = re.compile("Call-ID: (.*)$")
 #rx_rr = re.compile("^Record-Route:")
@@ -244,11 +244,11 @@ class UDPHandler(socketserver.BaseRequestHandler):
             if md:
                 header_expires = md.group(1)
 
-        if rx_invalid.search(contact) or rx_invalid2.search(contact):
-            if fromm in registrar:
-                del registrar[fromm]
-            self.sendResponse("488 Not Acceptable Here")
-            return
+        # if rx_invalid.search(contact) or rx_invalid2.search(contact):
+        #     if fromm in registrar:
+        #         del registrar[fromm]
+        #     self.sendResponse("488 Not Acceptable Here")
+        #     return
         if len(contact_expires) > 0:
             expires = int(contact_expires)
         elif len(header_expires) > 0:
@@ -314,7 +314,7 @@ class UDPHandler(socketserver.BaseRequestHandler):
                 #insert Record-Route
                 data.insert(1,recordroute)
                 text = "\r\n".join(data)
-                socket.sendto(text,claddr)
+                socket.sendto(text.encode(), claddr)
                 showtime()
                 logging.info("<<< %s" % data[0])
                 logging.debug( "---\n<< server send [%d]:\n%s\n---" % (len(text),text))
