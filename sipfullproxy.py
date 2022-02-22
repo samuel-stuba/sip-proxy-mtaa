@@ -290,7 +290,7 @@ class UDPHandler(socketserver.BaseRequestHandler):
                 #insert Record-Route
                 data.insert(1,recordroute)
                 text = "\r\n".join(data)
-                socket.sendto(text , claddr)
+                socket.sendto(text.encode(), claddr)
                 showtime()
                 logging.info("<<< %s" % data[0])
                 logging.debug("---\n<< server send [%d]:\n%s\n---" % (len(text),text))
@@ -338,7 +338,7 @@ class UDPHandler(socketserver.BaseRequestHandler):
                 #insert Record-Route
                 data.insert(1,recordroute)
                 text = "\r\n".join(data)
-                socket.sendto(text , claddr)
+                socket.sendto(text.encode(), claddr)
                 showtime()
                 logging.info("<<< %s" % data[0])
                 logging.debug("---\n<< server send [%d]:\n%s\n---" % (len(text),text))
@@ -356,7 +356,7 @@ class UDPHandler(socketserver.BaseRequestHandler):
                 self.data = self.removeRouteHeader()
                 data = self.removeTopVia()
                 text = "\r\n".join(data)
-                socket.sendto(text,claddr)
+                socket.sendto(text.encode() ,claddr)
                 showtime()
                 logging.info("<<< %s" % data[0])
                 logging.debug("---\n<< server send [%d]:\n%s\n---" % (len(text),text))
