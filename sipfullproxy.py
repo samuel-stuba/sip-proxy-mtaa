@@ -14,7 +14,7 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import SocketServer
+import socketserver
 import re
 import string
 import socket
@@ -70,20 +70,24 @@ recordroute = ""
 topvia = ""
 registrar = {}
 
-def hexdump( chars, sep, width ):
+
+def hexdump(chars, sep, width):
     while chars:
         line = chars[:width]
         chars = chars[width:]
         line = line.ljust( width, '\000' )
         logging.debug("%s%s%s" % ( sep.join( "%02x" % ord(c) for c in line ),sep, quotechars( line )))
 
+
 def quotechars( chars ):
-	return ''.join( ['.', c][c.isalnum()] for c in chars )
+    return ''.join(['.', c][c.isalnum()] for c in chars)
+
 
 def showtime():
     logging.debug(time.strftime("(%H:%M:%S)", time.localtime()))
 
-class UDPHandler(SocketServer.BaseRequestHandler):
+
+class UDPHandler(socketserver.BaseRequestHandler):
 
     def debugRegister(self):
         logging.debug("*** REGISTRAR ***")
@@ -178,7 +182,7 @@ class UDPHandler(SocketServer.BaseRequestHandler):
 
     def sendResponse(self,code):
         request_uri = "SIP/2.0 " + code
-        self.data[0]= request_uri
+        self.data[0] = request_uri
         index = 0
         data = []
         for line in self.data:
@@ -203,7 +207,7 @@ class UDPHandler(SocketServer.BaseRequestHandler):
                 break
         data.append("")
         text = "\r\n".join(data)
-        self.socket.sendto(text,self.client_address)
+        self.socket.sendto(text.encode(), self.client_address)
         showtime()
         logging.info("<<< %s" % data[0])
         logging.debug("---\n<< server send [%d]:\n%s\n---" % (len(text),text))
@@ -398,7 +402,7 @@ class UDPHandler(SocketServer.BaseRequestHandler):
 
     def handle(self):
         #socket.setdefaulttimeout(120)
-        data = self.request[0]
+        data = self.request[0].decode("utf-8")
         self.data = data.split("\r\n")
         self.socket = self.request[1]
         request_uri = self.data[0]
@@ -426,5 +430,5 @@ if __name__ == "__main__":
     logging.info(ipaddress)
     recordroute = "Record-Route: <sip:%s:%d;lr>" % (ipaddress,PORT)
     topvia = "Via: SIP/2.0/UDP %s:%d" % (ipaddress,PORT)
-    server = SocketServer.UDPServer((HOST, PORT), UDPHandler)
+    server = socketserver.UDPServer((HOST, PORT), UDPHandler)
     server.serve_forever()
